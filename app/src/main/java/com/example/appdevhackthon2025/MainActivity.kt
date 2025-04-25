@@ -25,6 +25,7 @@ class MainActivity : ComponentActivity() {
                         name = "Android",
                         modifier = Modifier.padding(innerPadding)
                     )
+                    WelcomeMessage()
                 }
             }
         }
@@ -44,5 +45,6 @@ fun Greeting(name: String, modifier: Modifier = Modifier) {
 fun GreetingPreview() {
     AppDevHackthon2025Theme {
         Greeting("Android")
+        WelcomeMessage()
     }
 }
