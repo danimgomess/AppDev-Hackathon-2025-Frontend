@@ -12,7 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.appdevhackthon2025.ui.theme.AppDevHackthon2025Theme
-// Authors: Daniel Martins Gomes, Daniel Idakwoji.
+// Authors: Daniel Martins Gomes, Daniel Idakwoji
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
