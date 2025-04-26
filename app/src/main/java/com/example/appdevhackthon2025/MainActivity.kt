@@ -11,40 +11,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.appdevhackthon2025.ui.screens.NavWrapper
 import com.example.appdevhackthon2025.ui.theme.AppDevHackthon2025Theme
+import dagger.hilt.android.AndroidEntryPoint
+
 // Authors: Daniel Martins Gomes, Daniel Idakwoji
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
             AppDevHackthon2025Theme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                    WelcomeMessage()
-                }
+                NavWrapper()
             }
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    AppDevHackthon2025Theme {
-        Greeting("Android")
-        WelcomeMessage()
     }
 }
