@@ -3,6 +3,7 @@ package com.example.appdevhackthon2025.ui.screens
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -11,10 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -40,9 +39,12 @@ fun ItemScreen(itemId: String, itemViewModel: ItemViewModel = hiltViewModel()) {
             Box(
                 modifier = Modifier
                     .height(220.dp)
-                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .clickable(onClick = {
+                        //Should this be passed in?
+                        }),
             ) {
-                val image = null //replace with method to get image from itemId
+                val image = null //replace with method to get image from itemId. Needs backing repo
                 AnimatedContent(targetState = image, label = "image loading") { response ->
                     when (response) {
                         null -> {
@@ -70,64 +72,50 @@ fun ItemScreen(itemId: String, itemViewModel: ItemViewModel = hiltViewModel()) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            TextField(
-                value = uiState.details,
-                onValueChange = { itemViewModel.updateDetails(it) },
-                label = { Text("Item Details") },
+            Text(
+                text = uiState.details,
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            TextField(
-                value = uiState.description,
-                onValueChange = { itemViewModel.updateDescription(it) },
-                label = { Text("Item Description") },
+            Text(
+                text = uiState.description,
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            TextField(
-                value = uiState.contact,
-                onValueChange = { itemViewModel.updateContact(it) },
-                label = { Text("Contact Info") },
-                modifier = Modifier.fillMaxWidth()
+            Text(
+                text = uiState.contact,
+                modifier = Modifier.fillMaxWidth(),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    //come back here!
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Save Item")
-            }
-
         }
     }
 }
 
+
 @Composable
-fun IS(itemId: String) {
-//    val uiState = "itemViewModel.uiState.collectAsState().value"
+fun IS() {
 
     Surface(
         modifier = Modifier.fillMaxHeight(),
         shape = RoundedCornerShape(8.dp),
         shadowElevation = 2.dp,
     ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Spacer(modifier = Modifier.height(36.dp))
 
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Box(
                 modifier = Modifier
                     .height(220.dp)
                     .padding(horizontal = 8.dp, vertical = 4.dp)
+                    .clickable(onClick = {
+                        //Should this be passed in?
+                    }),
             ) {
-                val image = null //replace with method to get image from itemId
+                val image = null //replace with method to get image from itemId. Needs backing repo
                 AnimatedContent(targetState = image, label = "image loading") { response ->
                     when (response) {
                         null -> {
@@ -155,42 +143,26 @@ fun IS(itemId: String) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            TextField(
-                value = "details",
-                onValueChange = { },
-                label = { Text("Item Details") },
+            Text(
+                text = "uiState.details",
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            TextField(
-                value = "description",
-                onValueChange = { },
-                label = { Text("Item Description") },
+            Text(
+                text = "uiState.description",
                 modifier = Modifier.fillMaxWidth()
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            TextField(
-                value = "contact",
-                onValueChange = { },
-                label = { Text("Contact Info") },
-                modifier = Modifier.fillMaxWidth()
+            Text(
+                text = "uiState.contact",
+                modifier = Modifier.fillMaxWidth(),
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            Button(
-                onClick = {
-                    //come back here!
-                },
-                modifier = Modifier
-            ) {
-                Text("Upload Item")
-            }
-
         }
     }
 }
@@ -199,5 +171,5 @@ fun IS(itemId: String) {
 @Preview
 @Composable
 fun ItemScreenPreview() {
-    IS("")
+    IS()
 }

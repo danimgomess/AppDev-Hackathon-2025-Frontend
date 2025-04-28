@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.appdevhackthon2025.ItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
@@ -12,9 +13,12 @@ import javax.inject.Inject
 @HiltViewModel
 class ItemViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-) : ViewModel() {
-    private val _uiState = MutableStateFlow(ItemUiState())
-    val uiState = _uiState
+    private val repository: ItemRepository,
+    ) : ViewModel() {
+
+    val id: String = checkNotNull(savedStateHandle["id"])
+    private val formState = repository.getFormState()
+    //We will use id to get the actual values from a repo?
 
     data class ItemUiState(
         val imageBitmap: ImageBitmap? = null,
@@ -22,18 +26,14 @@ class ItemViewModel @Inject constructor(
         val description: String = "",
         val contact: String = ""
     )
-
-    fun updateDetails(newDetails: String) {
-        _uiState.value = _uiState.value.copy(details = newDetails)
-    }
-
-    fun updateDescription(newDescription: String) {
-        _uiState.value = _uiState.value.copy(description = newDescription)
-    }
-
-    fun updateContact(newContact: String) {
-        _uiState.value = _uiState.value.copy(contact = newContact)
-    }
+    private val _uiState = MutableStateFlow(
+        ItemUiState(
+            details = formState?.title.orEmpty(),
+            description = formState?.description.orEmpty(),
+            contact = formState?.email.orEmpty()
+        )
+    )
+    val uiState = _uiState
 
     init {
         viewModelScope.launch {
@@ -42,7 +42,8 @@ class ItemViewModel @Inject constructor(
 
             launch {
                 _uiState.value = _uiState.value.copy(
-                    //What to do to do the actual logic here?
+                    details = "", description = "",
+                    contact = ""
                 )
             }
         }
