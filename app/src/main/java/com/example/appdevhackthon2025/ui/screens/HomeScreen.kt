@@ -6,11 +6,14 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -37,6 +40,19 @@ import com.example.appdevhackthon2025.R
             MainHeader()
 
             //HorizontalLine()
+            Button(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal=100.dp, vertical = 15.dp),
+                onClick = { navController.navigate("itemScreen") }
+            ){
+                Text(
+                    text = "Submit New Item",
+                    modifier = Modifier.padding(8.dp),
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
 
 
             //HorizontalLine()
@@ -51,7 +67,7 @@ private fun MainHeader() {
         verticalAlignment = CenterVertically,
         modifier = Modifier
             .statusBarsPadding()
-            .padding(top = 16.dp)
+            .padding(horizontal = 15.dp, vertical = 16.dp)
     ) {
         Spacer(Modifier.weight(1f))
         Image(
@@ -64,7 +80,7 @@ private fun MainHeader() {
 
         Text(
             text = "Cornell Lost and Found",
-            fontSize = 48.sp,
+            fontSize = 44.sp,
             fontWeight = FontWeight.Bold,
             lineHeight = 42.sp        )
         Spacer(Modifier.weight(1f))
