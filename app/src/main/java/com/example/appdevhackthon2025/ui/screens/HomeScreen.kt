@@ -16,17 +16,21 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.example.appdevhackthon2025.R
+import com.example.appdevhackthon2025.ui.components.HorizontalLine
 
 @Composable fun HomeScreen(
     navController: NavHostController
@@ -39,20 +43,35 @@ import com.example.appdevhackthon2025.R
         item {
             MainHeader()
 
-            //HorizontalLine()
+            HorizontalLine()
+
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal=100.dp, vertical = 15.dp),
-                onClick = { navController.navigate("itemScreen") }
+                    .padding(horizontal=100.dp, vertical = 20.dp),
+                onClick = { navController.navigate("itemScreen") },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.hsl(0f, 0.74f, 0.40f),
+                    contentColor = Color.White )
             ){
                 Text(
                     text = "Submit New Item",
-                    modifier = Modifier.padding(8.dp),
+                    modifier = Modifier
+                        .padding(8.dp),
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Bold
                 )
             }
+
+            HorizontalLine()
+
+            Text(
+                text = "Current Listings:",
+                textAlign = TextAlign.Center,
+                fontSize = 30.sp,
+                modifier = Modifier.fillMaxWidth()
+                    .padding(top=25.dp)
+            )
 
 
             //HorizontalLine()
@@ -73,15 +92,14 @@ private fun MainHeader() {
         Image(
             painter = painterResource(id = R.drawable.cornell_university_logo),
             contentDescription = "logo",
-            modifier = Modifier.size(115.dp)
+            modifier = Modifier.size(110.dp)
         )
 
         Spacer(Modifier.width(8.dp))
 
         Text(
             text = "Cornell Lost and Found",
-            fontSize = 44.sp,
-            fontWeight = FontWeight.Bold,
+            fontSize = 48.sp,
             lineHeight = 42.sp        )
         Spacer(Modifier.weight(1f))
     }
@@ -96,4 +114,5 @@ fun MainHeaderPreview() {
 @Preview
 @Composable
 fun HomeScreenPreview() {
+    HomeScreen(rememberNavController())
 }
