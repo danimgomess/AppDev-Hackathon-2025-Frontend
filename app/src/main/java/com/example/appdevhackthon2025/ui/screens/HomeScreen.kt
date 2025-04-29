@@ -49,7 +49,7 @@ import com.example.appdevhackthon2025.ui.components.HorizontalLine
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal=100.dp, vertical = 20.dp),
-                onClick = { navController.navigate("itemScreen") },
+                onClick = { navController.navigate("formScreen") },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.hsl(0f, 0.74f, 0.40f),
                     contentColor = Color.White )

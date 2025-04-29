@@ -20,7 +20,7 @@ fun NavWrapper() {
             )
         }
         composable("formScreen") {
-            // TODO: Remove "Test" and use an idea consistent with the model's item creation.
+            // TODO: Remove "Test" and use an ID consistent with the model's item creation.
             FormScreen()
         }
     }
