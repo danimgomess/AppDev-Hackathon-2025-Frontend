@@ -15,7 +15,7 @@ import com.example.appdevhackthon2025.ui.screens.NavWrapper
 import com.example.appdevhackthon2025.ui.theme.AppDevHackthon2025Theme
 import dagger.hilt.android.AndroidEntryPoint
 
-// Authors: Daniel Martins Gomes, Daniel Idakwoji
+// Authors: Daniel Martins Gomes, Daniel Idakwoji.
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
