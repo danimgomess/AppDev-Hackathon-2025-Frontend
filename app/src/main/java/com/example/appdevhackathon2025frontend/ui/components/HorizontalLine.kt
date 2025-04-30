@@ -1,4 +1,4 @@
-package com.example.appdevhackthon2025.ui.components
+package com.example.appdevhackathon2025frontend.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer

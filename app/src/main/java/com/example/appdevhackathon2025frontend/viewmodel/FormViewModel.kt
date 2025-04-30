@@ -1,33 +1,33 @@
-package com.example.appdevhackthon2025.viewmodel
+package com.example.appdevhackathon2025frontend.viewmodel
 
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.appdevhackthon2025.ItemRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FormViewModel @Inject constructor(
-    private val repository: ItemRepository,
-    savedStateHandle: SavedStateHandle,
+//    savedStateHandle: SavedStateHandle,
+//    private val repository: ItemRepository,
 ) : ViewModel() {
+//    val id: String = checkNotNull(savedStateHandle["id"])
     private val _uiState = MutableStateFlow(FormUiState())
     val uiState = _uiState
 
     data class FormUiState(
-        val name: String = "",
-        val email: String = "",
-        val phone: String = "",
-        val title: String = "",
-        val location: String = "",
-        val description: String = "",
-        val timeFound: String = "",
+        val name: String = "Name",
+        val email: String = "email",
+        val phone: String = "phone",
+        val title: String = "title",
+        val location: String = "location",
+        val description: String = "desc",
+        val timeFound: String = "ttf",
         val picture: ImageBitmap? = null,
-        )
+    )
     fun updateName(newName: String) {
         _uiState.value = _uiState.value.copy(name = newName)
     }
@@ -59,21 +59,17 @@ class FormViewModel @Inject constructor(
     fun updatePicture(newPicture: ImageBitmap?) {
         _uiState.value = _uiState.value.copy(picture = newPicture)
     }
-
-    fun submitForm() {
-        repository.saveFormState(_uiState.value)
-    }
+//
+//    fun submitForm() {
+//        repository.saveFormState(_uiState.value)
+//    }
 
 
     init {
         viewModelScope.launch {
-            val image = null
-            _uiState.value = _uiState.value.copy(picture = image)
 
             launch {
-                _uiState.value = _uiState.value.copy(
-                    //Do the actual logic here?
-                )
+                delay(50)
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.example.appdevhackthon2025.ui.theme
+package com.example.appdevhackathon2025frontend.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

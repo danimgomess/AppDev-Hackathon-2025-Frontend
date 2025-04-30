@@ -1,4 +1,4 @@
-package com.example.appdevhackthon2025.ui.screens
+package com.example.appdevhackathon2025frontend.ui.screens
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
@@ -11,17 +11,22 @@ fun NavWrapper() {
 
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = "homeScreen"
     )
     {
-        composable("home") {
+        composable("homeScreen") {
             HomeScreen(
                 navController = navController
             )
         }
         composable("formScreen") {
-            // TODO: Remove "Test" and use an ID consistent with the model's item creation.
-            FormScreen()
+            // TODO: Remove "Test" and use an idea consistent with the model's item creation.
+            FormScreen(
+                navController = navController
+            )
+        }
+        composable("itemScreen") {
+            ItemScreen(navController, "")
         }
     }
 }

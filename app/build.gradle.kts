@@ -8,13 +8,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.appdevhackthon2025"
+    namespace = "com.example.appdevhackathon2025frontend"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "com.example.appdevhackthon2025"
+        applicationId = "com.example.appdevhackathon2025frontend"
         minSdk = 28
-        targetSdk = 35
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 

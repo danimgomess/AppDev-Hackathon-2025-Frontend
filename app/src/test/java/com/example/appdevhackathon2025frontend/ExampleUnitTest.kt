@@ -1,4 +1,4 @@
-package com.example.appdevhackthon2025
+package com.example.appdevhackathon2025frontend
 
 import org.junit.Test
 

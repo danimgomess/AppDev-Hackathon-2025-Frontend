@@ -1,4 +1,4 @@
-package com.example.appdevhackthon2025.ui.theme
+package com.example.appdevhackathon2025frontend.ui.theme
 
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -33,7 +33,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun AppDevHackthon2025Theme(
+fun AppDevHackathon2025FrontendTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
