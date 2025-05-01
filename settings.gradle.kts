@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "AppDev Hackthon 2025"
+rootProject.name = "AppDev Hackathon 2025 Frontend"
 include(":app")
  
