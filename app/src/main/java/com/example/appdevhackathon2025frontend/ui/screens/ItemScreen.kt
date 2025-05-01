@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -38,7 +39,8 @@ fun ItemScreen(
     }
 
     Surface(
-        modifier = Modifier.fillMaxHeight(),
+        modifier = Modifier.fillMaxHeight().statusBarsPadding()
+        ,
         shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
         shadowElevation = 2.dp,
     ) {

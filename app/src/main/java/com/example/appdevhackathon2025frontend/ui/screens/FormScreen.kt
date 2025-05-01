@@ -63,10 +63,12 @@ fun FormScreen(
     }
 
     Surface(
-        modifier = Modifier.fillMaxHeight(),
+        modifier = Modifier.fillMaxHeight().statusBarsPadding().navigationBarsPadding()
+        ,
         shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
         shadowElevation = 2.dp,
     ) {
+
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
             Box(
@@ -107,7 +109,7 @@ fun FormScreen(
                     .padding(horizontal = 16.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             TextField(
                 value = uiState.email,
@@ -120,7 +122,7 @@ fun FormScreen(
                     .padding(horizontal = 16.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             TextField(
                 value = uiState.phone,
@@ -133,7 +135,7 @@ fun FormScreen(
                     .padding(horizontal = 16.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             TextField(
                 value = uiState.title,
@@ -146,7 +148,7 @@ fun FormScreen(
                     .padding(horizontal = 16.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             TextField(
                 value = uiState.location,
@@ -159,7 +161,7 @@ fun FormScreen(
                     .padding(horizontal = 16.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             TextField(
                 value = uiState.description,
@@ -172,7 +174,7 @@ fun FormScreen(
                     .padding(horizontal = 16.dp)
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             TextField(
                 value = uiState.timeFound,

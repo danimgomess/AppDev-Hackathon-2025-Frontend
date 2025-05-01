@@ -39,9 +39,9 @@ class ItemViewModel @Inject constructor(
                 delay(1000)
                 _uiState.value = ItemUiState(
                     imageBitmap = it.picture,
-                    details = it.title +" "+ it.description +" "+ it.timeFound +" "+ it.location,
+                    details = it.title +" found at around "+ it.timeFound +" at "+ it.location,
                     description = it.description,
-                    contact = it.name + " " + it.phone+ " " + it.email
+                    contact = "Found by: "+it.name + "\nPhone: " + it.phone+ "\nEmail: " + it.email
                 )
             }
         }
