@@ -3,20 +3,24 @@ package com.example.appdevhackathon2025frontend.viewmodel
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.appdevhackathon2025frontend.model.ItemRepository
+import com.example.appdevhackathon2025frontend.model.ItemRepository.Item
+import com.example.appdevhackathon2025frontend.model.UIEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FormViewModel @Inject constructor(
-//    savedStateHandle: SavedStateHandle,
-//    private val repository: ItemRepository,
+    private val repository: ItemRepository,
 ) : ViewModel() {
-//    val id: String = checkNotNull(savedStateHandle["id"])
-    private val _uiState = MutableStateFlow(FormUiState())
-    val uiState = _uiState
+    val uiStateFlow = MutableStateFlow(FormUiState())
+
+    private val _uiEventFlow = MutableStateFlow<UIEvent<String>?>(null)
+    val uiEventFlow = _uiEventFlow.asStateFlow()
 
     data class FormUiState(
         val name: String = "Name",
@@ -25,49 +29,71 @@ class FormViewModel @Inject constructor(
         val title: String = "title",
         val location: String = "location",
         val description: String = "desc",
-        val timeFound: String = "ttf",
+        val timeFound: String = "xPm",
         val picture: ImageBitmap? = null,
+        val id: String? = null,
     )
+
     fun updateName(newName: String) {
-        _uiState.value = _uiState.value.copy(name = newName)
+        uiStateFlow.value = uiStateFlow.value.copy(name = newName)
     }
 
     fun updateEmail(newEmail: String) {
-        _uiState.value = _uiState.value.copy(email = newEmail)
+        uiStateFlow.value = uiStateFlow.value.copy(email = newEmail)
     }
 
     fun updatePhone(newPhone: String) {
-        _uiState.value = _uiState.value.copy(phone = newPhone)
+        uiStateFlow.value = uiStateFlow.value.copy(phone = newPhone)
     }
 
     fun updateTitle(newTitle: String) {
-        _uiState.value = _uiState.value.copy(title = newTitle)
+        uiStateFlow.value = uiStateFlow.value.copy(title = newTitle)
     }
 
     fun updateLocation(newLocation: String) {
-        _uiState.value = _uiState.value.copy(location = newLocation)
+        uiStateFlow.value = uiStateFlow.value.copy(location = newLocation)
     }
 
     fun updateDescription(newDescription: String) {
-        _uiState.value = _uiState.value.copy(description = newDescription)
+        uiStateFlow.value = uiStateFlow.value.copy(description = newDescription)
     }
 
     fun updateTimeFound(newTimeFound: String) {
-        _uiState.value = _uiState.value.copy(timeFound = newTimeFound)
+        uiStateFlow.value = uiStateFlow.value.copy(timeFound = newTimeFound)
     }
 
     fun updatePicture(newPicture: ImageBitmap?) {
-        _uiState.value = _uiState.value.copy(picture = newPicture)
+        uiStateFlow.value = uiStateFlow.value.copy(picture = newPicture)
     }
-//
-//    fun submitForm() {
-//        repository.saveFormState(_uiState.value)
-//    }
 
+    fun onClickUpload() {
+        viewModelScope.launch {
+            _uiEventFlow.value = UIEvent("launch-image-picker")
+        }
+    }
+
+    fun onSubmitForm() {
+        viewModelScope.launch {
+            val item = Item(
+                name = uiStateFlow.value.name,
+                email = uiStateFlow.value.email,
+                phone = uiStateFlow.value.phone,
+                title = uiStateFlow.value.title,
+                location = uiStateFlow.value.location,
+                description = uiStateFlow.value.description,
+                timeFound = uiStateFlow.value.timeFound,
+                picture = uiStateFlow.value.picture
+            )
+            val id = repository.saveItem(item)
+            delay(1000)
+            _uiEventFlow.value = UIEvent("navigate-to-item-screen:$id")
+        }
+
+
+    }
 
     init {
         viewModelScope.launch {
-
             launch {
                 delay(50)
             }

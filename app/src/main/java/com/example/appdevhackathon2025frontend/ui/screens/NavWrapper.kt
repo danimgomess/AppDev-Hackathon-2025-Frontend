@@ -25,8 +25,10 @@ fun NavWrapper() {
                 navController = navController
             )
         }
-        composable("itemScreen") {
-            ItemScreen(navController, "")
+
+        composable("itemScreen/{id}") {
+            val id = it.arguments?.getString("id")
+            ItemScreen(navController, id.toString())
         }
     }
 }
