@@ -25,13 +25,14 @@ import androidx.compose.ui.unit.dp
 fun ItemCard(
     title: String,
     image: ImageBitmap?,
-    modifier: Modifier = Modifier
+    onCardClicked: () -> Unit
 ) {
     Card(
-        modifier = modifier
+        modifier = Modifier
             .padding(8.dp)
             .fillMaxWidth(),
         shape = RoundedCornerShape(8.dp),
+        onClick = onCardClicked
         //elevation = 4.dp
     ) {
         Column {
@@ -76,6 +77,6 @@ fun PreviewItemCard() {
         ItemCard(
             title = "Sample Item Title",
             image = null
-        )
+        ) {}
     }
 }
