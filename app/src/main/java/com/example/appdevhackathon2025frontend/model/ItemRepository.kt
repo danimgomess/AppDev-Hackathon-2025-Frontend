@@ -1,13 +1,24 @@
 package com.example.appdevhackathon2025frontend.model
 
+import android.content.Context
 import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.core.graphics.drawable.toBitmap
+import coil.ImageLoader
+import coil.request.ImageRequest
+import coil.request.SuccessResult
 import com.example.appdevhackathon2025frontend.viewmodel.FormViewModel.FormUiState
 import javax.inject.Inject
 import javax.inject.Singleton
+import com.example.appdevhackathon2025frontend.retrofit.*
+import dagger.hilt.android.qualifiers.ApplicationContext
+import retrofit2.HttpException
 
 @Singleton
 class ItemRepository @Inject constructor(
+    private val retrofitInstance: RetrofitInstance,
+    @ApplicationContext private val context: Context
 ) {
     data class Item(
         val name: String,
@@ -26,10 +37,7 @@ class ItemRepository @Inject constructor(
 
     /** Given an [id], returns the [FormUiState] associated with it. */
     suspend fun getItemFromId(id: String): Item? {
-            Log.d("ItemRepository", itemMap.toString())
-            Log.d("ItemRepository", "getItemFromId: $id")
-            Log.d("ItemRepository", "getItemFromId: ${itemMap[id]}")
-            return itemMap[id]
+        return itemMap[id]
     }
 
     /** Gets all the formState ids, ordered by chronology. */
@@ -52,15 +60,119 @@ class ItemRepository @Inject constructor(
 
     /** Saves a new Item and returns its ID. */
     suspend fun saveItem(item: Item): String {
-            Log.d("ItemRepository", "saveItem: $item")
-            val id = generateItemId()
-            Log.d("ItemRepository", "saveItem: $id")
-            itemMap[id] = item
-            Log.d("ItemRepository", "saveItem: ${itemMap[id]}")
-            idSequence.add(id)
-            return id
+        val id = generateItemId()
+        itemMap[id] = item
+        idSequence.add(id)
+//        postNewItemRemote(item)
+        return id
     }
 
+    /**
+     * Loads and returns an image from a URL using Coil.
+     */
+    suspend fun loadImageFromURL(url: String): ImageBitmap {
+        val imageLoader = ImageLoader(context)
+        val request = ImageRequest.Builder(context)
+            .data(url)
+            .build()
+
+        val result = imageLoader.execute(request)
+        if (result is SuccessResult) {
+            return (result.drawable.toBitmap()).asImageBitmap()
+        }
+
+        Log.e("CoilRepository", "Failed to load image from URL: $url")
+
+        return ImageBitmap(1, 1)
+    }
+    // Remote: Fetch all items from server
+    suspend fun fetchAllItemsRemote(): Result<List<Item>> {
+        return try {
+            val response = retrofitInstance.apiService.getAllItems()
+            if (response.isSuccessful) {
+                val remoteItems = response.body()?.items?.map {
+                    Item(
+                        name = it.user.name,
+                        email = it.user.email,
+                        phone = it.user.phone,
+                        title = it.title,
+                        location = it.location,
+                        description = it.description,
+                        timeFound = it.timeFound,
+                        picture = null // ImageBitmap not handled by backend
+                    )
+                } ?: emptyList()
+                Result.success(remoteItems)
+            } else {
+                Result.failure(HttpException(response))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    // Remote: Get item by ID
+    suspend fun fetchItemByIdRemote(id: Int): Result<Item> {
+        return try {
+            val response = retrofitInstance.apiService.getItemById(id)
+            if (response.isSuccessful) {
+                val it = response.body()!!
+                Result.success(
+                    Item(
+                        name = it.user.name,
+                        email = it.user.email,
+                        phone = it.user.phone,
+                        title = it.title,
+                        location = it.location,
+                        description = it.description,
+                        timeFound = it.timeFound,
+                        picture = loadImageFromURL(it.imageLink)
+                    )
+                )
+            } else {
+                Result.failure(HttpException(response))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    // Remote: Add new item
+    suspend fun postNewItemRemote(localItem: Item): Result<Unit> {
+        return try {
+            val itemRequest = ItemRequest(
+                title = localItem.title,
+                location = localItem.location,
+                description = localItem.description,
+                timeFound = localItem.timeFound,
+                imageLink = "" // TODO: image uploading
+            )
+            val response = retrofitInstance.apiService.addItem(itemRequest)
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(HttpException(response))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+    // Remote: Create new user : might not be used.
+    suspend fun registerUserRemote(localItem: Item): Result<Unit> {
+        return try {
+            val userRequest = UserRequest(
+                name = localItem.name,
+                email = localItem.email,
+                phone = localItem.phone
+            )
+            val response = retrofitInstance.apiService.createUser(userRequest)
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(HttpException(response))
+            }
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
     /** Deletes an formState given its id. */
     suspend fun deleteItem(id: String) {
         itemMap.remove(id)

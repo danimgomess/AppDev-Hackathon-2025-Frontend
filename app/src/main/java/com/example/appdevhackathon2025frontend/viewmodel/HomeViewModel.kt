@@ -21,11 +21,6 @@ class HomeViewModel @Inject constructor(
 
     val uiStateFlow: MutableStateFlow<UiState> = MutableStateFlow(UiState())
 
-    private val _eventFlow = MutableSharedFlow<UIEvent<Any>>()
-    val eventFlow = _eventFlow.asSharedFlow()
-
-    private val _navigateEvent = MutableStateFlow<UIEvent<String>?>(null)
-    val navigateEvent: StateFlow<UIEvent<String>?> = _navigateEvent.asStateFlow()
 
     data class UiState(
         val ids: List<String> = emptyList(),

@@ -23,13 +23,13 @@ class FormViewModel @Inject constructor(
     val uiEventFlow = _uiEventFlow.asStateFlow()
 
     data class FormUiState(
-        val name: String = "Name",
-        val email: String = "email",
-        val phone: String = "phone",
-        val title: String = "title",
-        val location: String = "location",
-        val description: String = "desc",
-        val timeFound: String = "xPm",
+        val name: String = "",
+        val email: String = "",
+        val phone: String = "",
+        val title: String = "",
+        val location: String = "",
+        val description: String = "",
+        val timeFound: String = "",
         val picture: ImageBitmap? = null,
         val id: String? = null,
     )

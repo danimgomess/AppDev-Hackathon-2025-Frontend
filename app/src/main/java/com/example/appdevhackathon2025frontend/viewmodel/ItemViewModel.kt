@@ -33,6 +33,13 @@ class ItemViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+//            val remoteResult =  repository.fetchItemByIdRemote(id.toInt())
+//            val item = if (remoteResult.isSuccess) {
+//                remoteResult.getOrNull()
+//            } else {
+//                repository.getItemFromId(id) // fallback to local
+//            }
+
             val item = repository.getItemFromId(id)
 
             item?.let {

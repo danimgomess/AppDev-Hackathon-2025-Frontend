@@ -192,8 +192,6 @@ fun FormScreen(
             Button(
                 onClick = {
                     formViewModel.onSubmitForm()
-//                    val itemId = formViewModel.uiStateFlow.value.id
-//                    navController.navigate("itemScreen/$itemId")
                 }, modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
