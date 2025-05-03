@@ -13,39 +13,23 @@ interface ApiService {
     @GET("items/{id}/")
     suspend fun getItemById(
         @retrofit2.http.Path("id") id: Int
-    ): Response<Item>
+    ): Response<ItemResponse>
 
     @POST("add_item/")
     suspend fun addItem(
         @Body newItem: ItemRequest
-    ): Response<Item>
+    ): Response<ItemResponse>
 
     @POST("users/")
     suspend fun createUser(
-        @Body user: UserRequest
+        @Body user: User
     ): Response<User>
 
 }
 
-data class ItemRequest(
-    val title: String,
-    val location: String,
-    val description: String,
-    @SerializedName("date_found")
-    val timeFound: String,
-    @SerializedName("image_link")
-    val imageLink: String
-)
 
 data class ItemsResponse(
-    val items: List<Item>
-)
-
-data class UserRequest(
-    @SerializedName("username")
-    val name: String,
-    val email: String,
-    val phone: String
+    val items: List<ItemResponse>
 )
 
 data class User(
@@ -55,16 +39,29 @@ data class User(
     val phone: String
 )
 
-data class Item(
+data class ItemResponse(
     val user: User,
     val title: String,
     val location: String,
     val description: String,
     @SerializedName("date_found")
     val timeFound: String,
-    @SerializedName("image_link")
+    @SerializedName("image_url")
     val imageLink: String
 )
-//TODO 3: Data class that models what the API will return
+
+data class ItemRequest(
+    val name: String,
+    val email: String,
+    @SerializedName("phone_number")
+    val phone: String,
+    val title: String,
+    @SerializedName("location_found")
+    val location: String,
+    val description: String,
+    val timeFound: String,
+    @SerializedName("image")
+    val imageLink: String
+)
 
 //TODO (Optional): an empty version of your data class.

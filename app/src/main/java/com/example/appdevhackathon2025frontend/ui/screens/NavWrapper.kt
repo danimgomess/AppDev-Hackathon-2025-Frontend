@@ -20,7 +20,6 @@ fun NavWrapper() {
             )
         }
         composable("formScreen") {
-            // TODO: Remove "Test" and use an idea consistent with the model's item creation.
             FormScreen(
                 navController = navController
             )

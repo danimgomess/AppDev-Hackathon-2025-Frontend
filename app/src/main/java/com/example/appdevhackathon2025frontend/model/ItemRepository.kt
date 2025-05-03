@@ -99,7 +99,7 @@ class ItemRepository @Inject constructor(
                         location = it.location,
                         description = it.description,
                         timeFound = it.timeFound,
-                        picture = null // ImageBitmap not handled by backend
+                        picture = loadImageFromURL(it.imageLink)
                     )
                 } ?: emptyList()
                 Result.success(remoteItems)
@@ -137,15 +137,21 @@ class ItemRepository @Inject constructor(
     }
     // Remote: Add new item
     suspend fun postNewItemRemote(localItem: Item): Result<Unit> {
+//        val imageLink = try{
+//            //Upload image and get link
+//        }
         return try {
-            val itemRequest = ItemRequest(
+            val postItem = ItemRequest(
+                name = localItem.name,
+                email = localItem.email,
+                phone = localItem.phone,
                 title = localItem.title,
                 location = localItem.location,
                 description = localItem.description,
                 timeFound = localItem.timeFound,
-                imageLink = "" // TODO: image uploading
+                imageLink = "imageLink", // TODO: image uploading
             )
-            val response = retrofitInstance.apiService.addItem(itemRequest)
+            val response = retrofitInstance.apiService.addItem(postItem)
             if (response.isSuccessful) {
                 Result.success(Unit)
             } else {
@@ -156,9 +162,9 @@ class ItemRepository @Inject constructor(
         }
     }
     // Remote: Create new user : might not be used.
-    suspend fun registerUserRemote(localItem: Item): Result<Unit> {
+    suspend fun registerUserRemote(localItem: Item): Result<Unit>   {
         return try {
-            val userRequest = UserRequest(
+            val userRequest = User(
                 name = localItem.name,
                 email = localItem.email,
                 phone = localItem.phone
