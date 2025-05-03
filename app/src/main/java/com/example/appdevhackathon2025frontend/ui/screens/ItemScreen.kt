@@ -39,8 +39,7 @@ fun ItemScreen(
     }
 
     Surface(
-        modifier = Modifier.fillMaxHeight().statusBarsPadding()
-        ,
+        modifier = Modifier.fillMaxHeight().statusBarsPadding(),
         shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp),
         shadowElevation = 2.dp,
     ) {

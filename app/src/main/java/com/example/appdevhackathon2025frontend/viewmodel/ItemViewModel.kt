@@ -1,5 +1,6 @@
 package com.example.appdevhackathon2025frontend.viewmodel
 
+import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -19,7 +20,6 @@ class ItemViewModel @Inject constructor(
 ) : ViewModel() {
 
     val id: String = checkNotNull(savedStateHandle["id"])
-    //We will use id to get the actual values from a repo?
 
     data class ItemUiState(
         val imageBitmap: ImageBitmap? = null,
@@ -33,15 +33,7 @@ class ItemViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-//            val remoteResult =  repository.fetchItemByIdRemote(id.toInt())
-//            val item = if (remoteResult.isSuccess) {
-//                remoteResult.getOrNull()
-//            } else {
-//                repository.getItemFromId(id) // fallback to local
-//            }
-
             val item = repository.getItemFromId(id)
-
             item?.let {
                 delay(1000)
                 _uiState.value = ItemUiState(

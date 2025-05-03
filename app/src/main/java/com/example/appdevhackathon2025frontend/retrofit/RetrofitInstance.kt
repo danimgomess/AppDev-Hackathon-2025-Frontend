@@ -14,7 +14,7 @@ class RetrofitInstance @Inject constructor(){
 
     val apiService: ApiService by lazy{
         Retrofit.Builder()
-            .baseUrl("https://api.api-ninjas.com/v1/")
+            .baseUrl("http://34.21.121.220/api/")
             .client(okHttpClient)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

@@ -1,5 +1,6 @@
 package com.example.appdevhackathon2025frontend.viewmodel
 
+import android.util.Log
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -74,6 +75,19 @@ class FormViewModel @Inject constructor(
 
     fun onSubmitForm() {
         viewModelScope.launch {
+            if (
+                uiStateFlow.value.name.isBlank() ||
+                uiStateFlow.value.email.isBlank() ||
+                uiStateFlow.value.phone.isBlank() ||
+                uiStateFlow.value.title.isBlank() ||
+                uiStateFlow.value.location.isBlank() ||
+                uiStateFlow.value.description.isBlank() ||
+                uiStateFlow.value.timeFound.isBlank() ||
+                uiStateFlow.value.picture == null
+            ) {
+                _uiEventFlow.value = UIEvent("form-error:missing-fields")
+                return@launch
+            }
             val item = Item(
                 name = uiStateFlow.value.name,
                 email = uiStateFlow.value.email,
@@ -85,6 +99,12 @@ class FormViewModel @Inject constructor(
                 picture = uiStateFlow.value.picture
             )
             val id = repository.saveItem(item)
+            val remoteId = repository.postAndCacheItem(id)
+            if (remoteId.isFailure){
+                Log.e("FormViewModel", "Failed to post item")
+            } else {
+                Log.d("FormViewModel", "Successfully posted item ${remoteId.getOrNull()}")
+            }
             delay(1000)
             _uiEventFlow.value = UIEvent("navigate-to-item-screen:$id")
         }

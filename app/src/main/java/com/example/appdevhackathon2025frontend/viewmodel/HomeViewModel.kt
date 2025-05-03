@@ -39,6 +39,7 @@ class HomeViewModel @Inject constructor(
 
     fun refreshItems() {
         viewModelScope.launch{
+            itemRepository.syncAllItemsFromRemote()
             val itemIds = itemRepository.getItemIds()
             uiStateFlow.value = uiStateFlow.value.copy(
                 items = itemIds.map { null },

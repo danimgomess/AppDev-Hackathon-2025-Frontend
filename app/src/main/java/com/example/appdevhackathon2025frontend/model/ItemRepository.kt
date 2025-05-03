@@ -1,8 +1,11 @@
 package com.example.appdevhackathon2025frontend.model
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
+import android.util.Log.e
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asAndroidBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.core.graphics.drawable.toBitmap
 import coil.ImageLoader
@@ -13,7 +16,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import com.example.appdevhackathon2025frontend.retrofit.*
 import dagger.hilt.android.qualifiers.ApplicationContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import retrofit2.HttpException
+import java.io.ByteArrayOutputStream
 
 @Singleton
 class ItemRepository @Inject constructor(
@@ -32,6 +40,8 @@ class ItemRepository @Inject constructor(
     )
 
     private val itemMap = mutableMapOf<String, Item>()
+    private val localToRemoteIdMap = mutableMapOf<String, Int>()
+    private val remoteToLocalIdMap = mutableMapOf<Int, String>()
 
     private val idSequence = mutableListOf<String>()
 
@@ -43,6 +53,10 @@ class ItemRepository @Inject constructor(
     /** Gets all the formState ids, ordered by chronology. */
     suspend fun getItemIds(): List<String> {
         return idSequence.toList()
+    }
+
+    suspend fun getRemoteIdFromLocalId(localId: String): Int? {
+        return localToRemoteIdMap[localId]
     }
 
     /** Generates a new unique id for an formState; one that is not already in use. */
@@ -63,9 +77,21 @@ class ItemRepository @Inject constructor(
         val id = generateItemId()
         itemMap[id] = item
         idSequence.add(id)
-//        postNewItemRemote(item)
         return id
     }
+
+    suspend fun postAndCacheItem(localId: String): Result<Int> {
+        val item = itemMap[localId] ?: return Result.failure(IllegalArgumentException("No such local item"))
+        return postNewItemRemote(item).onSuccess { remoteId ->
+            // Sync maps
+            localToRemoteIdMap[localId] = remoteId.toInt()
+            remoteToLocalIdMap[remoteId.toInt()] = localId
+        }
+    }
+
+
+    fun String.toPlainRequestBody(): RequestBody =
+        this.toRequestBody("text/plain".toMediaTypeOrNull())
 
     /**
      * Loads and returns an image from a URL using Coil.
@@ -90,18 +116,33 @@ class ItemRepository @Inject constructor(
         return try {
             val response = retrofitInstance.apiService.getAllItems()
             if (response.isSuccessful) {
-                val remoteItems = response.body()?.items?.map {
-                    Item(
-                        name = it.user.name,
-                        email = it.user.email,
-                        phone = it.user.phone,
-                        title = it.title,
-                        location = it.location,
-                        description = it.description,
-                        timeFound = it.timeFound,
-                        picture = loadImageFromURL(it.imageLink)
-                    )
+                val remoteItems = response.body()?.items?.mapNotNull {
+                    // Basic validation check: skip items with blank fields
+                    if (
+                        it.user.name.isBlank() ||
+                        it.user.email.isBlank() ||
+                        it.user.phone.isBlank() ||
+                        it.title.isBlank() ||
+                        it.location.isBlank() ||
+                        it.description.isBlank() ||
+                        it.timeFound.isBlank() ||
+                        it.imageLink.isNullOrBlank()
+                    ) {
+                        null
+                    } else {
+                        Item(
+                            name = it.user.name,
+                            email = it.user.email,
+                            phone = it.user.phone,
+                            title = it.title,
+                            location = it.location,
+                            description = it.description,
+                            timeFound = it.timeFound,
+                            picture = loadImageFromURL(it.imageLink)
+                        )
+                    }
                 } ?: emptyList()
+
                 Result.success(remoteItems)
             } else {
                 Result.failure(HttpException(response))
@@ -120,12 +161,12 @@ class ItemRepository @Inject constructor(
                     Item(
                         name = it.user.name,
                         email = it.user.email,
-                        phone = it.user.phone,
+                        phone = it.user.phone.toString(),
                         title = it.title,
                         location = it.location,
                         description = it.description,
                         timeFound = it.timeFound,
-                        picture = loadImageFromURL(it.imageLink)
+                        picture = loadImageFromURL(it.imageLink.toString())
                     )
                 )
             } else {
@@ -135,26 +176,68 @@ class ItemRepository @Inject constructor(
             Result.failure(e)
         }
     }
-    // Remote: Add new item
-    suspend fun postNewItemRemote(localItem: Item): Result<Unit> {
-//        val imageLink = try{
-//            //Upload image and get link
-//        }
+    suspend fun syncAllItemsFromRemote(): Result<Unit> {
+        return fetchAllItemsRemote().map { remoteItems ->
+            itemMap.clear()
+            idSequence.clear()
+            for ((_, item) in remoteItems.withIndex()) {
+                val id = generateItemId()
+                itemMap[id] = item
+                idSequence.add(id)
+            }
+        }
+    }
+
+    fun imageBitmapToMultipartOrNull(
+        image: ImageBitmap?,
+        partName: String = "image",
+        fileName: String = "image.jpg"
+    ): MultipartBody.Part? {
         return try {
-            val postItem = ItemRequest(
-                name = localItem.name,
-                email = localItem.email,
-                phone = localItem.phone,
-                title = localItem.title,
-                location = localItem.location,
-                description = localItem.description,
-                timeFound = localItem.timeFound,
-                imageLink = "imageLink", // TODO: image uploading
+            if (image == null) return null
+
+            val bitmap = image.asAndroidBitmap()
+            val stream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, stream)
+            val byteArray = stream.toByteArray()
+
+            val requestBody = byteArray.toRequestBody("image/jpeg".toMediaTypeOrNull())
+            MultipartBody.Part.createFormData(partName, fileName, requestBody)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    // Remote: Add new item
+    suspend fun postNewItemRemote(localItem: Item): Result<Int> {
+        val imagePart = localItem.picture?.let {
+            imageBitmapToMultipartOrNull(it)
+        }
+        return try {
+            val response = retrofitInstance.apiService.addItemWithImage(
+                name = localItem.name.toPlainRequestBody(),
+                email = localItem.email.toPlainRequestBody(),
+                phone = localItem.phone.toPlainRequestBody(),
+                title = localItem.title.toPlainRequestBody(),
+                location = localItem.location.toPlainRequestBody(),
+                description = localItem.description.toPlainRequestBody(),
+                timeFound = localItem.timeFound.toPlainRequestBody(),
+                image = imagePart
             )
-            val response = retrofitInstance.apiService.addItem(postItem)
             if (response.isSuccessful) {
-                Result.success(Unit)
+                val itemResponse = response.body()
+                if (itemResponse != null) {
+                    val backendId = itemResponse.id
+                    Result.success(backendId)
+                } else {
+                    Result.failure(IllegalStateException("Empty response body"))
+                }
             } else {
+                val errorBody = response.errorBody()?.string()
+                e("ItemRepository", "Unsuccessful response: $errorBody")
+
+                Log.d("ItemRepository", "Posted new item to remote but was not successful")
                 Result.failure(HttpException(response))
             }
         } catch (e: Exception) {
@@ -162,9 +245,9 @@ class ItemRepository @Inject constructor(
         }
     }
     // Remote: Create new user : might not be used.
-    suspend fun registerUserRemote(localItem: Item): Result<Unit>   {
+    suspend fun registerUserRemote(localItem: Item): Result<Unit> {
         return try {
-            val userRequest = User(
+            val userRequest = UserRequest(
                 name = localItem.name,
                 email = localItem.email,
                 phone = localItem.phone
