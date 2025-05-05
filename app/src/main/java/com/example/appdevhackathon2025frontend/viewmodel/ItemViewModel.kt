@@ -11,6 +11,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,6 +25,7 @@ class ItemViewModel @Inject constructor(
 
     data class ItemUiState(
         val imageBitmap: ImageBitmap? = null,
+        val title: String? = null,
         val details: String? = null,
         val description: String? = null,
         val contact: String? = null
@@ -30,6 +33,26 @@ class ItemViewModel @Inject constructor(
 
     private val _uiState = MutableStateFlow(ItemUiState())
     val uiState = _uiState.asStateFlow()
+    fun convertToHumanReadableFormat(input: String): String? {
+        val originalFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm", Locale.getDefault())
+        originalFormat.isLenient = false // Strict validation
+
+        val targetFormat = SimpleDateFormat("MMMM dd, yyyy 'at' hh:mm a", Locale.getDefault()) // Human-friendly format
+
+        return try {
+            // Parse the input string into a Date object
+            val date = originalFormat.parse(input)
+            // Format the Date object into the target human-readable format
+            if (date != null) {
+                targetFormat.format(date)
+            } else ""
+        } catch (e: Exception) {
+            // If parsing fails, return null or handle the error as needed
+            Log.e("ItemViewModel", "Error parsing date: ${e.message}")
+            null
+        }
+    }
+
 
     init {
         viewModelScope.launch {
@@ -38,7 +61,8 @@ class ItemViewModel @Inject constructor(
                 delay(1000)
                 _uiState.value = ItemUiState(
                     imageBitmap = it.picture,
-                    details = it.title +" found at around "+ it.timeFound +" at "+ it.location,
+                    title = it.title,
+                    details = "Found on "+ (convertToHumanReadableFormat(it.timeFound)) +"\n on "+ it.location,
                     description = it.description,
                     contact = "Found by: "+it.name + "\nPhone: " + it.phone+ "\nEmail: " + it.email
                 )

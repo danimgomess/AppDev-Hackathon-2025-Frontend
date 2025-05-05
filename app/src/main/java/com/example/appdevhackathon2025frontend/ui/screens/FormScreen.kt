@@ -1,13 +1,13 @@
 package com.example.appdevhackathon2025frontend.ui.screens
 
-import TextFieldWithButton
+import com.example.appdevhackathon2025frontend.ui.components.TextFieldWithButton
 import android.graphics.ImageDecoder
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,6 +22,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -58,10 +59,31 @@ fun FormScreen(
                 (payload == "launch-image-picker") -> {
                     pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
                 }
+
                 (payload == "form-error:missing-fields") -> {
-                    Toast.makeText(context, "Please fill all required fields", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, "Please fill all required fields", Toast.LENGTH_SHORT)
+                        .show()
                 }
 
+                (payload == "form-error:invalid-email") -> {
+                    Toast.makeText(context, "Please enter a valid email", Toast.LENGTH_SHORT).show()
+                }
+
+                (payload == "form-error:invalid-time-found") -> {
+                    Toast.makeText(
+                        context,
+                        "Please enter time in the required format",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                (payload == "form-error:invalid-phone") -> {
+                    Toast.makeText(
+                        context,
+                        "Please enter a valid phone number",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
 
             }
         }
@@ -102,86 +124,125 @@ fun FormScreen(
             LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
-
-                    TextField(
-                        value = uiState.name,
-                        onValueChange = {
-                            formViewModel.updateName(it)
-                        },
-                        label = { Text("Name") },
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "About you:",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .padding(start = 16.dp, bottom = 4.dp)
+                        )
+                    }
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    )
+                            .padding(horizontal = 16.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
 
+                            TextField(
+                                value = uiState.name,
+                                onValueChange = {
+                                    formViewModel.updateName(it)
+                                },
+                                label = { Text("Name") },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            TextField(
+                                value = uiState.email,
+                                onValueChange = {
+                                    formViewModel.updateEmail(it)
+                                },
+                                label = { Text("Email") },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                            )
+
+                            Spacer(modifier = Modifier.height(8.dp))
+
+                            TextField(
+                                value = uiState.phone,
+                                onValueChange = {
+                                    formViewModel.updatePhone(it)
+                                },
+                                label = { Text("Phone") },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+
+                        }
+                    }
                     Spacer(modifier = Modifier.height(8.dp))
-
-                    TextField(
-                        value = uiState.email,
-                        onValueChange = {
-                            formViewModel.updateEmail(it)
-                        },
-                        label = { Text("Email") },
+                    Box(modifier = Modifier.fillMaxWidth()) {
+                        Text(
+                            text = "About the object you found:",
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier
+                                .align(Alignment.CenterStart)
+                                .padding(start = 16.dp, bottom = 4.dp)
+                        )
+                    }
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    )
+                            .padding(horizontal = 16.dp),
+                        shape = RoundedCornerShape(8.dp),
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline)
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
 
-                    Spacer(modifier = Modifier.height(8.dp))
 
-                    TextField(
-                        value = uiState.phone,
-                        onValueChange = {
-                            formViewModel.updatePhone(it)
-                        },
-                        label = { Text("Phone") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    )
+                            TextField(
+                                value = uiState.title,
+                                onValueChange = {
+                                    formViewModel.updateTitle(it)
+                                },
+                                label = { Text("Title") },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                            )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
 
-                    TextField(
-                        value = uiState.title,
-                        onValueChange = {
-                            formViewModel.updateTitle(it)
-                        },
-                        label = { Text("Title") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    )
+                            TextField(
+                                value = uiState.location,
+                                onValueChange = {
+                                    formViewModel.updateLocation(it)
+                                },
+                                label = { Text("Location") },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                            )
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
 
-                    TextField(
-                        value = uiState.location,
-                        onValueChange = {
-                            formViewModel.updateLocation(it)
-                        },
-                        label = { Text("Location") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    )
+                            TextField(
+                                value = uiState.description,
+                                onValueChange = {
+                                    formViewModel.updateDescription(it)
+                                },
+                                label = { Text("Description") },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                            )
 
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    TextField(
-                        value = uiState.description,
-                        onValueChange = {
-                            formViewModel.updateDescription(it)
-                        },
-                        label = { Text("Description") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-                    TextFieldWithButton(onTextChange = {formViewModel.updateTimeFound(it)})
-
+                            Spacer(modifier = Modifier.height(8.dp))
+                            TextFieldWithButton(onTextChange = { formViewModel.updateTimeFound(it) })
+                        }
+                    }
                     Spacer(modifier = Modifier.height(16.dp))
 
                     Button(
@@ -189,7 +250,11 @@ fun FormScreen(
                             formViewModel.onSubmitForm()
                         }, modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
+                            .padding(horizontal = 16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.hsl(0f, 0.74f, 0.40f),
+                            contentColor = Color.White
+                        )
                     ) {
                         Text("Submit")
                     }

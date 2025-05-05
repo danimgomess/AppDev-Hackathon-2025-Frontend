@@ -12,6 +12,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -72,6 +74,17 @@ class FormViewModel @Inject constructor(
             _uiEventFlow.value = UIEvent("launch-image-picker")
         }
     }
+    fun isValidDateFormat(input: String): Boolean {
+        val pattern = "yyyy-MM-dd HH:mm"
+        val dateFormat = SimpleDateFormat(pattern, Locale.getDefault())
+        dateFormat.isLenient = false // Ensure strict validation (e.g., no invalid dates)
+        return try {
+            dateFormat.parse(input)
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
 
     fun onSubmitForm() {
         viewModelScope.launch {
@@ -86,6 +99,16 @@ class FormViewModel @Inject constructor(
                 uiStateFlow.value.picture == null
             ) {
                 _uiEventFlow.value = UIEvent("form-error:missing-fields")
+                return@launch
+            } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(uiStateFlow.value.email).matches()) {
+                _uiEventFlow.value = UIEvent("form-error:invalid-email")
+                return@launch
+            } else if (!isValidDateFormat(uiStateFlow.value.timeFound)) {
+                _uiEventFlow.value = UIEvent("form-error:invalid-time-found")
+                return@launch
+            }
+            else if (!android.util.Patterns.PHONE.matcher(uiStateFlow.value.phone).matches()) {
+                _uiEventFlow.value = UIEvent("form-error:invalid-phone")
                 return@launch
             }
             val item = Item(
